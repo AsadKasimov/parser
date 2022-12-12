@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-import io
+
 
 headers = {
     "accept": "*/*",
@@ -14,7 +14,7 @@ def write_In_file(url):
     response = s.get(url=url, headers=headers)
 
     # запишем html в файл
-    with io.open("ht.html", "w", encoding="utf-8") as file:
+    with open("ht.html", "w", encoding="utf-8") as file:
         file.write(response.text)
 
 
@@ -28,8 +28,7 @@ def get_page():
     all_news_part = soup.find_all("div", class_="cell-list__item m-no-image")
     print(all_news_part)
 
-    # у этого сайта 2 вида новостей.
-
+    # парсим обычные новости без картинок
     news_dict = []
     for news in all_news_part:
         # извлекаем дату
@@ -50,25 +49,20 @@ def get_page():
             f.write(
                 f'\n\nВремя: {item["date"]}\nНовость: {item["content"]}\nКонтент: {item["url"]}\n\n\n_______________________\n')
 
+    # извлекаем новости с картинок
     soup = BeautifulSoup(src, "lxml")
     all_news_part2 = soup.find_all("div", class_="cell cell-main-photo")
     print(all_news_part2)
     news_dict1 = []
-    new = []
     for news1 in all_news_part2:
-        # извлекаем URL картинки
 
         # извлекаем название
         content1 = news1.find('span', class_="cell-main-photo__desc").get_text(strip=True)
         # Время
         date1 = news1.find('span', class_="elem-info__date").get_text(strip=True)
         # извлекаем url
-        # url1 = news1.find('a', class_="cell-main-photo__link").get(href=True)
-
-
         for link in soup.find_all('a', class_="cell-main-photo__link"):
-            t=link.get('href')
-
+            t = link.get('href')
 
             news_dict1.append({
                 'date1': date1,
@@ -83,7 +77,7 @@ def get_page():
 
 
 def main():
-#    write_file("https://ria.ru/")
+    write_In_file("https://ria.ru/")
     get_page()
 
 
